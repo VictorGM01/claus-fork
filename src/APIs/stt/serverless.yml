@@ -1,0 +1,33 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: marceloassis123
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: Claus
+service: API_SST
+
+package:
+  patterns:
+    - '!node_modules/**'
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-include-dependencies
+
+custom:
+  serverless-offline:
+    httpPort: 6464
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+functions:
+  main:
+    handler: dist/main.handler
+    timeout: 30000
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'

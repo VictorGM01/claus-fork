@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/backend/.env
+    ports:
+      - "3000:3000"
+
+  service-tagging:
+    build:
+      context: ./src/services
+      dockerfile: nlp/pipelines/Dockerfile
+    env_file:
+      - ./src/services/.env
+    command: ["python", "./nlp/pipelines/intent_pipeline.py"]
+
+  service-intent:
+    build:
+      context: ./src/services
+      dockerfile: nlp/pipelines/Dockerfile
+    env_file:
+      - ./src/services/.env
+    command: ["python", "./nlp/pipelines/tagging_pipeline.py"]

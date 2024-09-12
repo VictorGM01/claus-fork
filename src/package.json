@@ -1,0 +1,20 @@
+{
+  "name": "claus",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "sst dev",
+    "Prod": "sst deploy --stage production"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "patch-package": "^8.0.0",
+    "sst": "3.0.42"
+  },
+  "devDependencies": {
+    "esbuild-node-externals": "^1.14.0",
+    "typescript": "5.5.4"
+  }
+}

@@ -1,0 +1,57 @@
+.items {
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list {
+  display: flex;
+  list-style-type: none;
+  gap: 4rem;
+  margin-right: 4rem;
+}
+
+.item a {
+  font-weight: 200;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.item a:hover {
+  font-weight: 300;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-dark {
+  color: #B5C6FF;
+}
+
+.link-light {
+  color: #2A376F;
+}
+
+.switchContainer {
+  display: flex;
+  align-items: center; 
+  justify-content: flex-end; 
+  gap: 16px; 
+}
+
+.darkSwitchName {
+  color: #F2F4FB; 
+  font-weight: 500;
+}
+
+.lightSwitchName {
+  color: #17203F; 
+  font-weight: 600;
+}

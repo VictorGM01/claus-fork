@@ -1,0 +1,40 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Claus Backend for Banking of America Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inteli-College/2024-2A-T09-ES07-G01.git"
+  },
+  "author": "Victor Gabriel Marques, Raphaela Guiland Ferraz, Raissa Vieira de Melo, Marcelo Miguel Pereira de Assis, Heitor Elias Prudente",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Inteli-College/2024-2A-T09-ES07-G01/issues"
+  },
+  "homepage": "https://github.com/Inteli-College/2024-2A-T09-ES07-G01#readme",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "joi": "^17.13.3",
+    "morgan": "^1.10.0",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "nodemon": "^3.1.4",
+    "sequelize-cli": "^6.6.2"
+  }
+}
