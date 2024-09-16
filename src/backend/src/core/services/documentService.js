@@ -65,12 +65,17 @@ async function create(documento) {
     }
   }
 
-  const novoDocumento = await database.Documentos.create({
-    nome,
-    link,
-    data_publicacao,
-    id_tipo: tipoDocumentoBd.id,
-    id_orgao: orgaoBd.id,
+  // cria apenas se não existir
+  const [novoDocumento, created] = await database.Documentos.findOrCreate({
+    where: {
+      nome,
+      link,
+    },
+    defaults: {
+      data_publicacao,
+      id_tipo: tipoDocumentoBd.id,
+      id_orgao: orgaoBd.id,
+    },
   });
 
   if (tagsExistentes.length) {
