@@ -10,6 +10,20 @@ services:
     ports:
       - "3000:3000"
     restart: always
+    depends_on:
+      - log-service
+    command: ["npm", "run", "start:core"]
+
+  log-service:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/backend/.env
+    ports:
+      - "3001:3001"
+    restart: always
+    command: ["npm", "run", "start:logs"]
 
   service-tagging:
     build:

@@ -1,4 +1,4 @@
-const database = require('../models');
+const database = require('../../models');
 const { Op } = require('sequelize');
 
 async function getAll() {
@@ -24,8 +24,7 @@ async function getAll() {
 }
 
 async function create(documento) {
-  let { nome, link, data_publicacao, tipo, orgao, tags } =
-    documento;
+  let { nome, link, data_publicacao, tipo, orgao, tags } = documento;
 
   const tipoDocumentoBd = await database.Tipos_Documentos.findOne({
     where: { nome: tipo },
@@ -155,8 +154,34 @@ async function search(parameters) {
   return documentos;
 }
 
+async function updateDocumentTags(idDocumento, idTags) {
+  const documento = await database.Documentos.findByPk(idDocumento);
+  if (!documento) {
+    throw new Error(`Documento com id ${idDocumento} não encontrado`);
+  }
+
+  const tagsBd = await database.Tags.findAll({
+    where: {
+      id: idTags,
+    },
+  });
+
+  if (tagsBd.length !== idTags.length) {
+    const tagsNaoEncontradas = idTags.filter(
+      (id) => !tagsBd.some((tag) => tag.id === id)
+    );
+
+    throw new Error(
+      `Ids de Tags não encontrados: ${tagsNaoEncontradas.join(', ')}`
+    );
+  }
+
+  await documento.setTags(tagsBd);
+}
+
 module.exports = {
   getAll,
   create,
-  search
+  search,
+  updateDocumentTags,
 };

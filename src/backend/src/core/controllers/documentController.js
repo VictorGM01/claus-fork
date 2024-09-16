@@ -1,8 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
-const { getAll, create, search } = require('../services/documentService.js');
+const {
+  getAll,
+  create,
+  search,
+  updateDocumentTags,
+} = require('../services/documentService.js');
 
-const { publishToQueue, consumeQueue } = require('../utils/queue.js');
+const { publishToQueue, consumeQueue } = require('../../utils/queue.js');
 
 async function getAllController(req, res) {
   try {
@@ -73,7 +78,6 @@ async function searchController(req, res) {
         message: 'Request timed out',
       });
     } else {
-      console.log(err);
       return res.status(500).json({
         message: 'Internal server error',
       });
@@ -81,8 +85,33 @@ async function searchController(req, res) {
   }
 }
 
+async function updateDocumentTagsController(req, res) {
+  try {
+    const idDocumento = parseInt(req.params.id);
+    const { idTags } = req.body;
+
+    const documento = await updateDocumentTags(idDocumento, idTags);
+
+    return res.status(200).json({
+      message: 'Document tags updated successfully',
+      data: documento,
+    });
+  } catch (err) {
+    if (err.message.includes('não encontrado')) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+    console.error(err);
+    return res.status(500).json({
+      message: 'Internal server error',
+    });
+  }
+}
+
 module.exports = {
   getAllController,
   createController,
   searchController,
+  updateDocumentTagsController,
 };

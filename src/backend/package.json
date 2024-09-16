@@ -2,11 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Claus Backend for Banking of America Project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon index.js",
-    "start": "node index.js",
+    "dev": "nodemon server.js dev",
+    "start": "node server.js",
+    "start:core": "node server.js core",
+    "start:logs": "node server.js logs",
     "lint": "eslint ."
   },
   "repository": {
@@ -21,6 +23,7 @@
   "homepage": "https://github.com/Inteli-College/2024-2A-T09-ES07-G01#readme",
   "dependencies": {
     "amqplib": "^0.10.4",
+    "axios": "^1.7.7",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

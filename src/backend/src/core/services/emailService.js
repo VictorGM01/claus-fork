@@ -1,4 +1,4 @@
-const database = require('../models');
+const database = require('../../models');
 
 async function getAll() {
   const emails = await database.Emails.findAll();

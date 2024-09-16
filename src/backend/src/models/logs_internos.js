@@ -1,10 +1,10 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Logs_Interno extends Model {
+  class Logs_Internos extends Model {
     static associate(models) {}
   }
-  Logs_Interno.init(
+  Logs_Internos.init(
     {
       inicio_execucao: DataTypes.DATE,
       fim_execucao: DataTypes.DATE,
@@ -19,11 +19,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Logs_Interno',
+      modelName: 'Logs_Internos',
       timestamps: true,
       createdAt: 'criado_em',
       updatedAt: 'atualizado_em',
     }
   );
-  return Logs_Interno;
+  return Logs_Internos;
 };
