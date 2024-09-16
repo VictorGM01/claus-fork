@@ -31,7 +31,7 @@ services:
       dockerfile: nlp/pipelines/Dockerfile
     env_file:
       - ./src/services/.env
-    command: ["python", "./nlp/pipelines/intent_pipeline.py"]
+    command: ["python", "./nlp/pipelines/tagging_pipeline.py"]
     restart: always
 
   service-intent:
@@ -40,5 +40,5 @@ services:
       dockerfile: nlp/pipelines/Dockerfile
     env_file:
       - ./src/services/.env
-    command: ["python", "./nlp/pipelines/tagging_pipeline.py"]
+    command: ["python", "./nlp/pipelines/intent_pipeline.py"]
     restart: always
