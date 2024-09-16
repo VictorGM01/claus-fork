@@ -95,7 +95,7 @@ def apply_model_to_csv(model, vectorizer, mlb_classes, csv_path):
 
 def send_post_to_api(document_data):
     """Envia um POST para a API com os dados do documento."""
-    url = f"{API_URL}/documents"
+    url = f"{API_URL}/documents/webhook/save"
     logger.info(f"Enviando dados para a API: {document_data}")
 
     try:
