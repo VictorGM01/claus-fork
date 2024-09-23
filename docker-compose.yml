@@ -43,6 +43,16 @@ services:
     command: ["python", "./nlp/pipelines/intent_pipeline.py"]
     restart: always
 
+  stt:
+    build:
+      context: ./src/stt
+      dockerfile: Dockerfile
+    env_file:
+      - ./src/stt/.env
+    ports:
+      - "3004:3004"
+    restart: always
+
   frontend:
     build:
       context: ./src/frontend
@@ -56,3 +66,4 @@ services:
       - NODE_ENV=production
     depends_on:
       - backend
+      - stt
