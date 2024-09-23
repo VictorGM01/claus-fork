@@ -1,0 +1,17 @@
+.resultsCount {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    margin: 10px 0;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .count-light {
+    color: #17203F;
+  }
+  
+  .count-dark {
+    color: #DDE5FF;
+  }
+  

@@ -1,8 +1,8 @@
 .main {
-  width: 100vw;
-  height: 100vh;
+  min-height: 100vh; 
   background-color: #F2F4FB;
-  display: flex;
+  display: flex; 
+  flex-direction: column;
 }
 
 .dark-main {
@@ -11,10 +11,78 @@
 
 .container {
   width: 85vw;
-  height: 100vh;
+  flex-grow: 1; 
   display: flex;
   flex-direction: column;
   margin-left: auto;
   margin-right: auto;
   gap: 32px;
+}
+
+.resultsCount {
+  display: flex;
+  justify-content: start;
+  width: 100%;
+  margin: 10px 0;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.count-light {
+  color: #17203F;
+}
+
+.count-dark {
+  color: #DDE5FF;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+}
+
+.button-dark {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #3559D3; 
+  color: white;
+  border-radius: 5px;
+}
+
+.button-light {
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  cursor: pointer;
+  background-color: #3559D3; 
+  color: #fff;
+  border-radius: 5px;
+}
+
+.button-dark:disabled {
+  background-color: #2a376f;
+  cursor: not-allowed;
+}
+
+.button-light:disabled {
+  background-color: #ddd;
+  color: #333;
+  cursor: not-allowed;
+}
+
+.text-dark {
+  color: #DDE5FF;
+}
+
+.text-light {
+  color: #17203F;
+}
+
+.pagination span {
+  margin: 0 10px;
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './styles.module.css'; 
 import stylesToggle from "../../style/toggleTheme.module.css";
 import PropTypes from 'prop-types';
@@ -22,14 +23,20 @@ export default function Header({ darkTheme, handleCheckboxChange }) {
           <ul className={styles.list}>
             {location.pathname !== '/' && (
               <li className={styles.item}>
-                <a className={darkTheme ? styles["link-dark"] : styles["link-light"]} href="/">Início</a>
+                <a 
+                  className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/' ? styles.active : ''}`}
+                  href="/">Início</a>
               </li>
             )}
             <li className={styles.item}>
-              <a className={darkTheme ? styles["link-dark"] : styles["link-light"]} href="/historico">Histórico</a>
+              <a 
+                className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/historico' ? styles.active : ''}`}
+                href="/historico">Histórico</a>
             </li>
             <li className={styles.item}>
-              <a className={darkTheme ? styles["link-dark"] : styles["link-light"]} href="/notificacoes">Notificações</a>
+              <a 
+                className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/notificacoes' ? styles.active : ''}`}
+                href="/emails">E-mails</a>
             </li>
           </ul>
         </nav>

@@ -48,10 +48,15 @@
 
 .darkSwitchName {
   color: #F2F4FB; 
-  font-weight: 500;
+  font-weight: 200;
 }
 
 .lightSwitchName {
   color: #17203F; 
-  font-weight: 600;
+  font-weight: 250;
+}
+
+.item a.link-dark.active,
+.item a.link-light.active {
+  font-weight: bold;
 }

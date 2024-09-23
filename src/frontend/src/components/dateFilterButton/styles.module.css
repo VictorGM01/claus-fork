@@ -1,0 +1,17 @@
+.options {
+    position: relative;
+  }
+  
+  .datePickerContainer {
+    position: absolute;
+    z-index: 2;
+    margin-top: 1vh;
+    opacity: 0; 
+    transform: translateY(-20px); 
+    transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out; 
+  }
+  
+  .datePickerContainer.show {
+    opacity: 1; 
+    transform: translateY(0); 
+  }

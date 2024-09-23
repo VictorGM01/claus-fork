@@ -7,7 +7,7 @@
 
 .table th {
   font-weight: bolder;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-align: center; 
   padding: 2rem 0rem; 
 }
@@ -58,4 +58,24 @@
 
 .rotate-arrow {
   transform: rotate(180deg); 
+}
+
+.tagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; 
+  max-width: 200px; 
+  justify-content: center; 
+  margin: 0 auto; 
+}
+
+.tag {
+  background-color: #555;
+  color: #fff;
+  padding: 4px 8px;
+  margin: 2px 0; 
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  cursor: pointer;
 }

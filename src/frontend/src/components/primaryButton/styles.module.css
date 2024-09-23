@@ -1,0 +1,38 @@
+.button {
+  padding: .5rem 1rem;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.dark {
+  background-color: #17203F;
+  border: 1px solid #3559D3;
+  color: #DDE5FF;
+}
+
+.dark:hover {
+  background-color: #B5C6FF;
+  border: 1px solid #B5C6FF;
+  color: #17203F;
+}
+
+.light {
+  background-color: #ffffff00;
+  border: 1px solid #3559D3;
+  color: #17203F;
+}
+
+.light:hover {
+  background-color: #3559D3;
+  color: #F0F0F0;
+}
+
+.active {
+  background-color: #3559D3; /* Cor azul quando o filtro estiver ativo */
+  color: #fff;
+}

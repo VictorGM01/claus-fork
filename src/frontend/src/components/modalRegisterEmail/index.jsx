@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './styles.module.css';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
@@ -30,9 +31,9 @@ export default function ModalRegisterEmail({ isOpen, onClose, onSubmit, darkThem
   if (!isOpen) return null;
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} id="modal">
       <div className={`${styles.modal} ${darkTheme ? styles["dark-modal"] : styles["light-modal"]}`}>
-        <button className={`${styles.closeButton} ${darkTheme ? styles["dark-closeButton"] : styles["light-closeButton"]}`} onClick={onClose}>X</button>
+        <button className={`${styles.closeButton} ${darkTheme ? styles["dark-closeButton"] : styles["light-closeButton"]}`} onClick={onClose} id="buttonClose">X</button>
         <h2 className={styles.title}>{successMessage ? "E-mail cadastrado" : "Cadastrar e-mail"}</h2>
         
         {successMessage ? (
@@ -44,12 +45,13 @@ export default function ModalRegisterEmail({ isOpen, onClose, onSubmit, darkThem
               <label htmlFor="email" className={`${styles.label} ${darkTheme ? styles["dark-label"] : styles["light-label"]}`}>Digite seu e-mail</label>
               <input
                 type="email"
+                name='email'
                 placeholder="Digite o e-mail"
                 className={`${styles.input} ${darkTheme ? styles["dark-input"] : styles["light-input"]}`}
                 required
               />
               <div className={styles.buttonsContainer}>
-                <button type="submit" className={`${styles.submitButton} ${darkTheme ? styles["dark-submitButton"] : styles["light-submitButton"]}`}>
+                <button type="submit" className={`${styles.submitButton} ${darkTheme ? styles["dark-submitButton"] : styles["light-submitButton"]}`} id="buttonRegister">
                   Cadastrar
                 </button>
 

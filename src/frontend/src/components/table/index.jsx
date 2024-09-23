@@ -1,8 +1,9 @@
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.module.css';
 
-export default function Table({ columns, data, isLog = false, isTag = false, darkTheme = false}) {
+export default function Table({ columns, data, isLog = false, isTag = false, darkTheme = false }) {
   const [sort, setSort] = useState({ column: '', order: '' });
   const [sortedData, setSortedData] = useState([...data]);
   const tagColors = useRef({});
@@ -16,8 +17,8 @@ export default function Table({ columns, data, isLog = false, isTag = false, dar
       data.forEach(row => {
         if (row.Tags) {
           row.Tags.forEach(tag => {
-            if (!colors[tag]) {
-              colors[tag] = generateRandomColor();
+            if (!colors[tag.abbreviated]) {
+              colors[tag.abbreviated] = generateRandomColor();
             }
           });
         }
@@ -80,10 +81,16 @@ export default function Table({ columns, data, isLog = false, isTag = false, dar
     setSortedData(sorted);
   };
 
+  const isIpAddress = value => {
+    // Verifica se o valor é um endereço IP (IPv4 ou IPv6)
+    return (
+      typeof value === 'string' &&
+      (value.match(/^(\d{1,3}\.){3}\d{1,3}$/) || value.includes('::'))
+    );
+  };
+
   return (
-    <table
-      className={`${styles['table']} ${darkTheme ? styles['dark-table'] : styles['light-table']}`}
-    >
+    <table className={`${styles['table']} ${darkTheme ? styles['dark-table'] : styles['light-table']}`}>
       <thead>
         <tr>
           {columns.map(column => (
@@ -91,7 +98,7 @@ export default function Table({ columns, data, isLog = false, isTag = false, dar
               {column}
               {column.toLowerCase().includes('data') && (
                 <img
-                  src={darkTheme ? "/arrow-dark-theme.svg" : "/arrow-light-theme.svg"} 
+                  src={darkTheme ? '/arrow-dark-theme.svg' : '/arrow-light-theme.svg'}
                   alt="Sort arrow"
                   className={`${styles['sort-arrow']} ${
                     sort.column === column && sort.order === 'asc' ? styles['rotate-arrow'] : ''
@@ -107,26 +114,25 @@ export default function Table({ columns, data, isLog = false, isTag = false, dar
           <tr key={index}>
             {columns.map(column => (
               <td key={column}>
-                {!isNaN(new Date(row[column]).getTime()) ? ( 
-                  formatDate(row[column]) 
+                {/* Verificação adicional para IPs e datas */}
+                {!isNaN(new Date(row[column]).getTime()) && !isIpAddress(row[column]) ? (
+                  formatDate(row[column])
                 ) : column.toLowerCase() === 'tags' && isTag ? (
-                  row[column].map((tag, idx) => (
-                    <span
-                      key={idx}
-                      style={{
-                        backgroundColor: tagColors.current[tag],
-                        color: '#fff',
-                        padding: '4px 8px',
-                        margin: '2px',
-                        borderRadius: '4px',
-                        display: 'inline-block'
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))
+                  <div className={styles.tagContainer}>
+                    {row.Tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        title={tag.full}
+                        className={styles.tag}
+                        style={{
+                          backgroundColor: tagColors.current[tag.abbreviated] || '#ccc',
+                        }}
+                      >
+                        {tag.abbreviated}
+                      </span>
+                    ))}
+                  </div>
                 ) : column.toLowerCase() === 'nome' && row[column].nome && row[column].link ? (
-                  // Renderiza o nome como link
                   <a
                     href={row[column].link}
                     style={{ textDecoration: 'underline', color: 'inherit' }}
@@ -152,5 +158,5 @@ Table.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   isLog: PropTypes.bool,
   isTag: PropTypes.bool,
-  darkTheme: PropTypes.bool
+  darkTheme: PropTypes.bool,
 };
