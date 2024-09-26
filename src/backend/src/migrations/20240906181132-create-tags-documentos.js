@@ -39,10 +39,6 @@ module.exports = {
           'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
         ),
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
     });
   },
   async down(queryInterface, Sequelize) {

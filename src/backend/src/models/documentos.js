@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
       data_publicacao: DataTypes.DATE,
       id_tipo: DataTypes.INTEGER,
       id_orgao: DataTypes.INTEGER,
+      filename: DataTypes.TEXT,
+      b2_url: DataTypes.TEXT,
       criado_em: DataTypes.DATE,
       atualizado_em: DataTypes.DATE,
     },

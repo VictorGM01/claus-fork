@@ -187,6 +187,7 @@ def click_and_download_pdfs(driver: webdriver.Chrome, download_dir: str, bucket)
                             'link': article_url,
                             'pdf_path': pdf_url,
                             'csv_path': csv_url,
+                            'filename': pdf_filename,
                         }
                         results_for_rabbitmq.append(document_data)
 

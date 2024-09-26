@@ -24,7 +24,8 @@ async function getAll() {
 }
 
 async function create(documento) {
-  let { nome, link, data_publicacao, tipo, orgao, tags } = documento;
+  let { nome, link, data_publicacao, tipo, orgao, tags, filename, b2_url } =
+    documento;
 
   const tipoDocumentoBd = await database.Tipos_Documentos.findOne({
     where: { nome: tipo },
@@ -65,17 +66,14 @@ async function create(documento) {
     }
   }
 
-  // cria apenas se não existir
-  const [novoDocumento, created] = await database.Documentos.findOrCreate({
-    where: {
-      nome,
-      link,
-    },
-    defaults: {
-      data_publicacao,
-      id_tipo: tipoDocumentoBd.id,
-      id_orgao: orgaoBd.id,
-    },
+  const novoDocumento = await database.Documentos.create({
+    nome,
+    link,
+    data_publicacao,
+    id_tipo: tipoDocumentoBd.id,
+    id_orgao: orgaoBd.id,
+    filename,
+    b2_url,
   });
 
   if (tagsExistentes.length) {
@@ -182,6 +180,8 @@ async function updateDocumentTags(idDocumento, idTags) {
   }
 
   await documento.setTags(tagsBd);
+
+  return { documento, tags: tagsBd };
 }
 
 module.exports = {

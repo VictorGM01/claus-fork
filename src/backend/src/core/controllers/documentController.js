@@ -90,7 +90,17 @@ async function updateDocumentTagsController(req, res) {
     const idDocumento = parseInt(req.params.id);
     const { idTags } = req.body;
 
-    const documento = await updateDocumentTags(idDocumento, idTags);
+    const { documento, tags } = await updateDocumentTags(idDocumento, idTags);
+
+    const data = {
+      filename: documento.filename,
+      csv_path: documento.b2_url,
+      corrected_tags: tags.map((tag) => tag.nome),
+    };
+
+    await publishToQueue('core.documents.updated-tags', data);
+
+    console.log('Data published to queue:', data);
 
     return res.status(200).json({
       message: 'Document tags updated successfully',

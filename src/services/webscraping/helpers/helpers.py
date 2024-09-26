@@ -57,6 +57,10 @@ def extract_article_info(article) -> Tuple[str, str, str]:
             By.XPATH, ".//p[b[text()='Data:']]")
         publication_date = date_element.text.replace("Data: ", "").strip()
 
+        # formata publication_date para em vez de DD/MM/YYYY para YYYY-MM-DD
+        publication_date = datetime.strptime(
+            publication_date, '%d/%m/%Y').strftime('%Y-%m-%d')
+
         # Extrai o tipo de documento
         type_element = article.find_element(
             By.XPATH, ".//p[b[text()='Tipo:']]")

@@ -24,6 +24,7 @@ load_dotenv()
 # Configuração do RabbitMQ
 rabbitmq_url = os.getenv("RABBITMQ_HOST")
 rabbitmq_queue = 'scraping.documents.extracted'
+updated_tags_queue = 'core.documents.updated-tags'
 
 # Configuração do Backblaze B2
 B2_APPLICATION_KEY_ID = os.getenv('B2_APPLICATION_KEY_ID')
@@ -126,6 +127,7 @@ def process_message(ch, method, properties, body):
     document_date = message.get('data')
     document_link = message.get('link')
     document_name = message.get('nome')
+    filename = message.get('filename')
 
     if not csv_url:
         logger.error("Caminho do CSV não encontrado na mensagem.")
@@ -148,6 +150,8 @@ def process_message(ch, method, properties, body):
             "tags": row['predicted_tags'].split(', '),  # Tags previstas
             "tipo": document_type,
             "nome": document_name,
+            "filename": filename,
+            "b2_url": csv_url
         }
         send_post_to_api(document_data)
 
@@ -157,20 +161,102 @@ def process_message(ch, method, properties, body):
     print(result_df.head())
 
 
+def append_to_training_data(df_new):
+    training_data_path = 'data/processed/training_data.csv'
+
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    if not os.path.exists('data/processed'):
+        os.makedirs('data/processed')
+
+    # mostra quais dados estão sendo adicionados
+    logger.info(f"Adicionando novos dados à base de treinamento: {df_new}")
+    if os.path.exists(training_data_path):
+        df_existing = pd.read_csv(training_data_path)
+
+        # quantidade de linhas antes
+        logger.info(f"Linhas antes: {len(df_existing)}")
+
+        # Concatenar os novos dados com os existentes
+        df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+
+        # mantém apenas o último registro, se tiver mais de uma linha para o mesmo filename
+        df_combined.drop_duplicates(
+            subset='filename', keep='last', inplace=True)
+
+        # quantidade de linhas depois
+        logger.info(f"Linhas depois: {len(df_combined)}")
+    else:
+        df_combined = df_new
+
+    # Salvar a base de treinamento atualizada
+    df_combined.to_csv(training_data_path, index=False)
+    logger.info("Novos dados adicionados à base de treinamento.")
+
+
+def process_updated_tags_message(ch, method, properties, body):
+    logger.info("Mensagem recebida na fila de atualização de tags.")
+    message = None
+
+    # Decodificar a mensagem JSON
+    try:
+        message = json.loads(body.decode())
+    except json.JSONDecodeError:
+        message = ast.literal_eval(body.decode())
+
+    logger.info(f"Mensagem decodificada: {message}")
+
+    # Extrair informações da mensagem
+    csv_url = message.get('csv_path')  # URL do CSV na B2
+    filename = message.get('filename')  # Nome do arquivo
+    corrected_tags = message.get('corrected_tags')  # Lista de tags corretas
+
+    if not csv_url or not corrected_tags or not filename:
+        logger.error("Informações insuficientes na mensagem.")
+        return
+
+    # Fazer download do CSV do Backblaze B2
+    csv_path = download_from_backblaze(csv_url)
+
+    # Carregar o CSV
+    df_new = pd.read_csv(csv_path)
+
+    # Verificar se a coluna 'conteúdo' está presente
+    if 'conteúdo' not in df_new.columns:
+        logger.error("Coluna 'conteúdo' não encontrada no CSV.")
+        return
+
+    # Adicionar as novas informações ao DataFrame
+    df_new['filename'] = filename
+    # tags é uma lista, mas precisamos deixar uma string de itens separados por vírgula
+    df_new['tags'] = ", ".join(corrected_tags)
+    df_new.rename(columns={'conteúdo': 'text'}, inplace=True)
+
+    # Selecionar apenas as colunas relevantes
+    df_new = df_new[['filename', 'text', 'tags']]
+
+    # Salvar os novos dados na base de treinamento
+    append_to_training_data(df_new)
+
+
 def listen_to_rabbitmq():
     # Configuração do RabbitMQ
     parameters = pika.URLParameters(rabbitmq_url)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
-    # Declaração da fila (caso ainda não exista)
+    # Declaração das filas
     channel.queue_declare(queue=rabbitmq_queue)
+    channel.queue_declare(queue=updated_tags_queue)
 
-    # Consumir mensagens da fila
+    # Consumir mensagens das filas
     channel.basic_consume(queue=rabbitmq_queue,
                           on_message_callback=process_message, auto_ack=True)
+    channel.basic_consume(queue=updated_tags_queue,
+                          on_message_callback=process_updated_tags_message, auto_ack=True)
 
-    logger.info(f"Escutando mensagens na fila: {rabbitmq_queue}")
+    logger.info(f"Escutando mensagens nas filas: {
+                rabbitmq_queue} e {updated_tags_queue}")
     channel.start_consuming()
 
 
