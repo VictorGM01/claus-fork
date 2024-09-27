@@ -35,8 +35,8 @@ export default function Header({ darkTheme, handleCheckboxChange }) {
             </li>
             <li className={styles.item}>
               <a 
-                className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/notificacoes' ? styles.active : ''}`}
-                href="/emails">E-mails</a>
+                className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/emails' ? styles.active : ''}`} 
+                href="/emails">E-mails</a> 
             </li>
           </ul>
         </nav>

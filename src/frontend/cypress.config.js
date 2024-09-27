@@ -8,6 +8,6 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
     },
-    baseUrl: 'http://192.168.137.1:5173',
+    baseUrl: 'http://10.150.1.253:5173',
   },
 });

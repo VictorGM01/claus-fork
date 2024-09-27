@@ -20,7 +20,7 @@ export default function Filters({
   };
 
   return (
-    <div className={styles.filtersContainer}>
+    <div className={styles.filtersContainer}  data-testid="filters-container">
       <div className={styles.filterItem}>
         <DateFilterButton
           darkTheme={darkTheme}

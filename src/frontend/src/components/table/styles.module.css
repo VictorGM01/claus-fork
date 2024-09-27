@@ -3,6 +3,7 @@
   border-radius: 15px;
   padding: 1.5rem 2rem;
   width: 100%;
+  margin-bottom: 50px;
 }
 
 .table th {
@@ -77,5 +78,31 @@
   border-radius: 4px;
   font-size: 0.875rem;
   white-space: nowrap;
+  cursor: default;
+}
+
+.editTagsButton {
+  background: transparent;
+  border: none;
+  color: #17203f;
   cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+  text-decoration: underline;
+}
+
+.light-table .editTagsButton {
+  color: #8c9cd1;
+}
+
+.light-table .editTagsButton:hover {
+  color: #17203f; 
+}
+
+.dark-table .editTagsButton {
+  color: #7781a0;
+}
+
+.dark-table .editTagsButton:hover {
+  color: #DDE5FF; 
 }

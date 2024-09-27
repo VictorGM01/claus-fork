@@ -16,7 +16,8 @@ export default function ModalRegisterEmail({ isOpen, onClose, onSubmit, darkThem
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const email = event.target[0].value;
+    const email = event.target.elements.email.value;
+    console.log(email);
     
     try {
       onSubmit(email);
@@ -41,7 +42,7 @@ export default function ModalRegisterEmail({ isOpen, onClose, onSubmit, darkThem
         ) : (
           <>
             {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-            <form onSubmit={handleSubmit}>
+            <form data-testid="form" onSubmit={handleSubmit}>
               <label htmlFor="email" className={`${styles.label} ${darkTheme ? styles["dark-label"] : styles["light-label"]}`}>Digite seu e-mail</label>
               <input
                 type="email"

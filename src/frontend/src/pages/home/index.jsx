@@ -6,18 +6,8 @@ import Header from "../../components/header";
 import Filters from "../../components/filters";
 import Pagination from "../../components/pagination";
 import ResultsCount from "../../components/resultsCount";
-import LoaderSpinner from "../../components/loaderSpinner"; 
-
-function abbreviateTags(tags) {
-  return tags.map((tag) => ({
-    full: tag.nome,
-    abbreviated: tag.nome
-      .split(" ")
-      .filter((word) => word[0] === word[0].toUpperCase())
-      .map((word) => word[0])
-      .join(""),
-  }));
-}
+import LoaderSpinner from "../../components/loaderSpinner";
+import ModalEditTags from "../../components/modalEditTags"; 
 
 export default function Home() {
   const [darkTheme, setDarkTheme] = useState(false);
@@ -25,16 +15,38 @@ export default function Home() {
   const [micOn, setMicOn] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedRegulators, setSelectedRegulators] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 5;
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [logSent, setLogSent] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const resultsPerPage = 5;
+  const indexOfLastResult = currentPage * resultsPerPage;
+  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+  const currentResults = filteredData.slice(
+    indexOfFirstResult,
+    indexOfLastResult
+  );
+
+  const totalPages = Math.ceil(filteredData.length / resultsPerPage);
+
+  function abbreviateTags(tags) {
+    return tags.map((tag) => ({
+      id: tag.id,
+      full: tag.nome,
+      abbreviated: tag.nome
+        .split(" ")
+        .filter((word) => word[0] === word[0].toUpperCase())
+        .map((word) => word[0])
+        .join(""),
+    }));
+  }
 
   const handleCheckboxChange = () => {
     setDarkTheme(!darkTheme);
@@ -42,26 +54,33 @@ export default function Home() {
 
   const fetchAllDocuments = async () => {
     try {
-      setLoading(true); 
+      setLoading(true);
       const response = await fetch(
-        `${import.meta.env.VITE_URL_API_BACKEND}/documents`
+        `${import.meta.env.VITE_URL_API_BACKEND}/documents`,
+        {
+          headers: {
+            "Cache-Control": "no-store",
+          },
+        }
       );
       const result = await response.json();
-
+  
       if (Array.isArray(result.data)) {
-        const formattedData = result.data.map((doc) => ({
-          Nome: { nome: doc.nome, link: doc.link },
-          "Data de Publicação": new Date(
-            doc.data_publicacao
-          ).toLocaleDateString("pt-BR"),
-          Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
-          "Órgão Regulador": doc.orgao.nome,
-          "Tipo de Documento": doc.tipo.nome,
-        }));
-
+        const formattedData = result.data.map((doc) => {
+          const [year, month, day] = doc.data_publicacao.split("T")[0].split("-");
+          return {
+            id: doc.id,
+            Nome: { nome: doc.nome, link: doc.link },
+            "Data de Publicação": `${day}/${month}/${year}`, 
+            Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
+            "Órgão Regulador": doc.orgao?.nome || doc.orgao_nome || "N/A", 
+            "Tipo de Documento": doc.tipo?.nome || doc.tipo_nome || "N/A",
+          };
+        });
+  
         setTableData(formattedData);
         setFilteredData(formattedData);
-
+  
         const allTags = new Set();
         result.data.forEach((doc) => {
           if (Array.isArray(doc.tags)) {
@@ -81,7 +100,7 @@ export default function Home() {
 
   const handleSearch = async (searchText) => {
     try {
-      setLoading(true); 
+      setLoading(true);
       const response = await fetch(
         `${import.meta.env.VITE_URL_API_BACKEND}/documents/search`,
         {
@@ -97,38 +116,46 @@ export default function Home() {
 
       if (Array.isArray(result.data)) {
         const formattedData = result.data.map((doc) => ({
+          id: doc.id,
           Nome: { nome: doc.nome, link: doc.link },
           "Data de Publicação": new Date(
             doc.data_publicacao
           ).toLocaleDateString("pt-BR"),
           Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
+          "Órgão Regulador": doc.orgao_nome || "N/A",
+          "Tipo de Documento": doc.tipo_nome || "N/A",
         }));
 
         setTableData(formattedData);
         setFilteredData(formattedData);
+
+        await sendLog(`Busca realizada: ${searchText}`, "Busca realizada");
       } else {
         console.error("Erro: a resposta não é um array de documentos.", result);
       }
     } catch (error) {
       console.error("Error searching documents:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
-  const handleDateFilterChange = (date) => {
+  const handleDateFilterChange = async (date) => {
     setSelectedDate(date);
     filterData(date, selectedTags, selectedRegulators);
+    await sendLog(`Filtro de data aplicado: ${date.toLocaleDateString("pt-BR")}`, "Filtro realizado");
   };
 
-  const handleTagFilterChange = (selectedTags) => {
+  const handleTagFilterChange = async (selectedTags) => {
     setSelectedTags(selectedTags);
     filterData(selectedDate, selectedTags, selectedRegulators);
+    await sendLog(`Filtro de tags aplicado: ${selectedTags.join(", ")}`, "Filtro realizado");
   };
 
-  const handleRegulatorFilterChange = (selectedRegulators) => {
+  const handleRegulatorFilterChange = async (selectedRegulators) => {
     setSelectedRegulators(selectedRegulators);
     filterData(selectedDate, selectedTags, selectedRegulators);
+    await sendLog(`Filtro de órgão regulador aplicado: ${selectedRegulators.join(", ")}`, "Filtro realizado");
   };
 
   const filterData = (date, tags, regulators) => {
@@ -161,9 +188,34 @@ export default function Home() {
     setCurrentPage(1);
   };
 
+  const sendLog = async (descricao, tipo) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/logs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ descricao, tipo }),
+      });
+
+      if (response.ok) {
+        console.log("Log enviado com sucesso:", descricao);
+      } else {
+        console.error("Erro ao enviar log");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar log:", error);
+    }
+  };
+
   useEffect(() => {
     fetchAllDocuments();
-  }, []);
+
+    if (!logSent) {
+      sendLog('Página Home acessada', 'Acesso à página principal');
+      setLogSent(true);
+    }
+  }, [logSent]);
 
   const startRecording = async () => {
     try {
@@ -198,7 +250,6 @@ export default function Home() {
     } else {
       stopRecording();
     }
-
   }, [micOn]);
 
   const sendAudioToSTT = async (audioBlob) => {
@@ -250,29 +301,63 @@ export default function Home() {
     }
   };
 
-  const indexOfLastResult = currentPage * resultsPerPage;
-  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = filteredData.slice(
-    indexOfFirstResult,
-    indexOfLastResult
-  );
-
-  const totalPages = Math.ceil(filteredData.length / resultsPerPage);
-
-  const handleNextPage = () => {
+  const handleNextPage = async () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      await sendLog(`Página ${nextPage} acessada`, "Página acessada");
     }
   };
 
-  const handlePrevPage = () => {
+  const handlePrevPage = async () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      const prevPage = currentPage - 1;
+      setCurrentPage(prevPage);
+      await sendLog(`Página ${prevPage} acessada`, "Página acessada");
     }
   };
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = async (pageNumber) => {
     setCurrentPage(pageNumber);
+    await sendLog(`Página ${pageNumber} acessada`, "Página acessada");
+  };
+
+  const openEditTagsModal = (document) => {
+    setSelectedDocument({
+      id: document.id,
+      documentName: document.Nome.nome, 
+      currentTags: document.Tags.map((tag) => ({ id: tag.id, nome: tag.full })), 
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTags = async (updatedTags) => {
+    if (!selectedDocument) return;
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_URL_API_BACKEND}/documents/${
+          selectedDocument.id
+        }/tags`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idTags: updatedTags }), 
+        }
+      );
+
+      if (response.ok) {
+        console.log("Tags atualizadas com sucesso!");
+        fetchAllDocuments();
+        setIsModalOpen(false);
+      } else {
+        console.error("Erro ao atualizar tags");
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar tags:", error);
+    }
   };
 
   return (
@@ -296,6 +381,7 @@ export default function Home() {
                 value={searchBar}
                 onChange={(e) => setSearchBar(e.target.value)}
                 onKeyDown={handleKeyDown}
+                id='filterInput'
               />
               <div className={stylesSearch.searchBoxIcon}>
                 <button
@@ -318,23 +404,20 @@ export default function Home() {
             onApplyRegulatorFilter={handleRegulatorFilterChange}
           />
 
-          <ResultsCount
-            darkTheme={darkTheme}
-            count={filteredData.length}
-          />
-
+          <ResultsCount darkTheme={darkTheme} count={filteredData.length} />
 
           {loading ? (
-            <LoaderSpinner loading={loading} darkTheme={darkTheme} /> 
+            <LoaderSpinner loading={loading} darkTheme={darkTheme} />
           ) : (
             <>
-          <Table
-            columns={["Nome", "Órgão Regulador", "Tipo de Documento", "Tags", "Data de Publicação"]}
-            data={currentResults} 
-            isLog={false}
-            isTag={true}
-            darkTheme={darkTheme}
-          />
+              <Table
+                columns={["Nome", "Órgão Regulador", "Tipo de Documento", "Tags", "Data de Publicação"]}
+                data={currentResults} 
+                isLog={false}
+                isTag={true}
+                darkTheme={darkTheme}
+                onEditTags={openEditTagsModal} 
+              />
 
               <Pagination
                 currentPage={currentPage}
@@ -348,6 +431,18 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {isModalOpen && selectedDocument && (
+        <ModalEditTags
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          documentName={selectedDocument.documentName} 
+          currentTags={selectedDocument.currentTags} 
+          availableTags={availableTags}
+          onSave={handleSaveTags}
+          darkTheme={darkTheme}
+        />
+      )}
     </main>
   );
 }
