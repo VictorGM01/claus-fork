@@ -255,8 +255,7 @@ def listen_to_rabbitmq():
     channel.basic_consume(queue=updated_tags_queue,
                           on_message_callback=process_updated_tags_message, auto_ack=True)
 
-    logger.info(f"Escutando mensagens nas filas: {
-                rabbitmq_queue} e {updated_tags_queue}")
+    logger.info(f"Escutando mensagens nas filas: {rabbitmq_queue} e {updated_tags_queue}")
     channel.start_consuming()
 
 
