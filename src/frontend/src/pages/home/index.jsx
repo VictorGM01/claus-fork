@@ -7,7 +7,7 @@ import Filters from "../../components/filters";
 import Pagination from "../../components/pagination";
 import ResultsCount from "../../components/resultsCount";
 import LoaderSpinner from "../../components/loaderSpinner";
-import ModalEditTags from "../../components/modalEditTags"; 
+import ModalEditTags from "../../components/modalEditTags";
 
 export default function Home() {
   const [darkTheme, setDarkTheme] = useState(false);
@@ -64,23 +64,25 @@ export default function Home() {
         }
       );
       const result = await response.json();
-  
+
       if (Array.isArray(result.data)) {
         const formattedData = result.data.map((doc) => {
-          const [year, month, day] = doc.data_publicacao.split("T")[0].split("-");
+          const [year, month, day] = doc.data_publicacao
+            .split("T")[0]
+            .split("-");
           return {
             id: doc.id,
             Nome: { nome: doc.nome, link: doc.link },
-            "Data de Publicação": `${day}/${month}/${year}`, 
+            "Data de Publicação": `${day}/${month}/${year}`,
             Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
-            "Órgão Regulador": doc.orgao?.nome || doc.orgao_nome || "N/A", 
+            "Órgão Regulador": doc.orgao?.nome || doc.orgao_nome || "N/A",
             "Tipo de Documento": doc.tipo?.nome || doc.tipo_nome || "N/A",
           };
         });
-  
+
         setTableData(formattedData);
         setFilteredData(formattedData);
-  
+
         const allTags = new Set();
         result.data.forEach((doc) => {
           if (Array.isArray(doc.tags)) {
@@ -143,19 +145,28 @@ export default function Home() {
   const handleDateFilterChange = async (date) => {
     setSelectedDate(date);
     filterData(date, selectedTags, selectedRegulators);
-    await sendLog(`Filtro de data aplicado: ${date.toLocaleDateString("pt-BR")}`, "Filtro realizado");
+    await sendLog(
+      `Filtro de data aplicado: ${date.toLocaleDateString("pt-BR")}`,
+      "Filtro realizado"
+    );
   };
 
   const handleTagFilterChange = async (selectedTags) => {
     setSelectedTags(selectedTags);
     filterData(selectedDate, selectedTags, selectedRegulators);
-    await sendLog(`Filtro de tags aplicado: ${selectedTags.join(", ")}`, "Filtro realizado");
+    await sendLog(
+      `Filtro de tags aplicado: ${selectedTags.join(", ")}`,
+      "Filtro realizado"
+    );
   };
 
   const handleRegulatorFilterChange = async (selectedRegulators) => {
     setSelectedRegulators(selectedRegulators);
     filterData(selectedDate, selectedTags, selectedRegulators);
-    await sendLog(`Filtro de órgão regulador aplicado: ${selectedRegulators.join(", ")}`, "Filtro realizado");
+    await sendLog(
+      `Filtro de órgão regulador aplicado: ${selectedRegulators.join(", ")}`,
+      "Filtro realizado"
+    );
   };
 
   const filterData = (date, tags, regulators) => {
@@ -190,13 +201,16 @@ export default function Home() {
 
   const sendLog = async (descricao, tipo) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/logs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ descricao, tipo }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_URL_API_BACKEND}/logs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ descricao, tipo }),
+        }
+      );
 
       if (response.ok) {
         console.log("Log enviado com sucesso:", descricao);
@@ -212,7 +226,7 @@ export default function Home() {
     fetchAllDocuments();
 
     if (!logSent) {
-      sendLog('Página Home acessada', 'Acesso à página principal');
+      sendLog("Página Home acessada", "Acesso à página principal");
       setLogSent(true);
     }
   }, [logSent]);
@@ -254,10 +268,6 @@ export default function Home() {
 
   const sendAudioToSTT = async (audioBlob) => {
     console.log("Sending audio to Whisper...");
-
-    // mostra o tamanho do arquivo de áudio
-    console.log("Tamanho do arquivo de áudio:", audioBlob.size);
-
     const formData = new FormData();
     const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
     formData.append("audio", audioFile);
@@ -330,8 +340,8 @@ export default function Home() {
   const openEditTagsModal = (document) => {
     setSelectedDocument({
       id: document.id,
-      documentName: document.Nome.nome, 
-      currentTags: document.Tags.map((tag) => ({ id: tag.id, nome: tag.full })), 
+      documentName: document.Nome.nome,
+      currentTags: document.Tags.map((tag) => ({ id: tag.id, nome: tag.full })),
     });
     setIsModalOpen(true);
   };
@@ -349,7 +359,7 @@ export default function Home() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ idTags: updatedTags }), 
+          body: JSON.stringify({ idTags: updatedTags }),
         }
       );
 
@@ -386,7 +396,7 @@ export default function Home() {
                 value={searchBar}
                 onChange={(e) => setSearchBar(e.target.value)}
                 onKeyDown={handleKeyDown}
-                id='filterInput'
+                id="filterInput"
               />
               <div className={stylesSearch.searchBoxIcon}>
                 <button
@@ -416,12 +426,18 @@ export default function Home() {
           ) : (
             <>
               <Table
-                columns={["Nome", "Órgão Regulador", "Tipo de Documento", "Tags", "Data de Publicação"]}
-                data={currentResults} 
+                columns={[
+                  "Nome",
+                  "Órgão Regulador",
+                  "Tipo de Documento",
+                  "Tags",
+                  "Data de Publicação",
+                ]}
+                data={currentResults}
                 isLog={false}
                 isTag={true}
                 darkTheme={darkTheme}
-                onEditTags={openEditTagsModal} 
+                onEditTags={openEditTagsModal}
               />
 
               <Pagination
@@ -441,8 +457,8 @@ export default function Home() {
         <ModalEditTags
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          documentName={selectedDocument.documentName} 
-          currentTags={selectedDocument.currentTags} 
+          documentName={selectedDocument.documentName}
+          currentTags={selectedDocument.currentTags}
           availableTags={availableTags}
           onSave={handleSaveTags}
           darkTheme={darkTheme}
