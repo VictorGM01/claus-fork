@@ -253,6 +253,11 @@ export default function Home() {
   }, [micOn]);
 
   const sendAudioToSTT = async (audioBlob) => {
+    console.log("Sending audio to Whisper...");
+
+    // mostra o tamanho do arquivo de áudio
+    console.log("Tamanho do arquivo de áudio:", audioBlob.size);
+
     const formData = new FormData();
     const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
     formData.append("audio", audioFile);
