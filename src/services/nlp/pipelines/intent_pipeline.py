@@ -33,76 +33,136 @@ rabbitmq_queue = 'core.documents.search'
 rabbitmq_queue_response = 'core.documents.search.response'
 
 tag_mapping = {
+    'administrador carteira': 'Administradores de Carteiras',
     'administradores carteiras': 'Administradores de Carteiras',
+    'agencia classificacao risco credito': 'Agências de Classificação de Risco de Crédito',
     'agencias classificacao risco credito': 'Agências de Classificação de Risco de Crédito',
+    'agente fiduciario': 'Agentes Fiduciários',
     'agentes fiduciarios': 'Agentes Fiduciários',
     'alerta': 'Alerta',
+    'alertas': 'Alerta',
+    'analista valores mobiliarios': 'Analistas de Valores Mobiliários',
     'analistas valores mobiliarios': 'Analistas de Valores Mobiliários',
+    'assessor investimento': 'Assessores de Investimento',
     'assessores investimento': 'Assessores de Investimento',
     'ato declaratorio': 'Ato Declaratório',
+    'atos declaratorios': 'Ato Declaratório',
     'atuacao irregular': 'Atuação Irregular',
+    'atuacoes irregulares': 'Atuação Irregular',
     'audiencia publica': 'Audiência Pública',
+    'audiencias publicas': 'Audiência Pública',
     'auditor independente': 'Auditor Independente',
+    'auditores independentes': 'Auditor Independente',
     'bdr': 'BDR',
+    'bdrs': 'BDR',
+    'cadastro participante regulado': 'Cadastro de Participantes Regulados',
     'cadastro participantes regulados': 'Cadastro de Participantes Regulados',
+    'clube investimento': 'Clubes de Investimento',
     'clubes investimento': 'Clubes de Investimento',
     'companhia': 'Companhia',
+    'companhias': 'Companhia',
     'comunicado mercado': 'Comunicado ao Mercado',
+    'comunicados mercado': 'Comunicado ao Mercado',
     'concurso premio': 'Concurso/Prêmio',
+    'concursos premios': 'Concurso/Prêmio',
+    'consultor valores mobiliarios': 'Consultores de Valores Mobiliários',
     'consultores valores mobiliarios': 'Consultores de Valores Mobiliários',
     'convenio': 'Convênio',
+    'convenios': 'Convênio',
     'coronavirus': 'Coronavirus',
     'corretora': 'Corretora',
+    'corretoras': 'Corretora',
     'crowdfunding': 'Crowdfunding',
     'decisao colegiado': 'Decisão do Colegiado',
+    'decisoes colegiado': 'Decisão do Colegiado',
     'deliberacao': 'Deliberação',
+    'deliberacoes': 'Deliberação',
     'educacao financeira': 'Educação Financeira',
+    'educacoes financeiras': 'Educação Financeira',
     'evento': 'Evento',
+    'eventos': 'Evento',
+    'fundo investimento': 'Fundos de Investimento',
     'fundos investimento': 'Fundos de Investimento',
+    'fundo investimento direitos creditorios': 'Fundos de Investimento em Direitos Creditórios',
     'fundos investimento direitos creditorios': 'Fundos de Investimento em Direitos Creditórios',
+    'fundo investimento participacoes': 'Fundos de Investimento em Participações',
     'fundos investimento participacoes': 'Fundos de Investimento em Participações',
+    'fundo investimento imobiliario': 'Fundos de Investimento Imobiliários',
     'fundos investimento imobiliarios': 'Fundos de Investimento Imobiliários',
     'gestao institucional': 'Gestão Institucional',
+    'gestoes institucionais': 'Gestão Institucional',
     'indenizacao': 'Indenização',
+    'indenizacoes': 'Indenização',
     'infraestrutura mercado': 'Infraestrutura do Mercado',
+    'infraestruturas mercado': 'Infraestrutura do Mercado',
     'insider trading': 'Insider Trading',
+    'intermediario': 'Intermediários',
     'intermediarios': 'Intermediários',
+    'investidor nao residente': 'Investidores Nao Residentes',
     'investidores nao residentes': 'Investidores Nao Residentes',
     'julgamento': 'Julgamento',
+    'julgamentos': 'Julgamento',
     'julgamento insider': 'Julgamento_Insider',
+    'julgamentos insider': 'Julgamento_Insider',
+    'mercado organizado': 'Mercados Organizados',
     'mercados organizados': 'Mercados Organizados',
+    'norma contabel': 'Normas Contábeis',
     'normas contabeis': 'Normas Contábeis',
     'nota': 'Nota',
+    'notas': 'Nota',
+    'oferta publica': 'Ofertas Publicas',
     'ofertas publicas': 'Ofertas Publicas',
     'oficio circular': 'Ofício Circular',
+    'oficios circulares': 'Ofício Circular',
     'ouvidoria': 'Ouvidoria',
     'parecer orientacao': 'Parecer de Orientação',
+    'pareceres orientacao': 'Parecer de Orientação',
     'pesquisa': 'Pesquisa',
+    'pesquisas': 'Pesquisa',
     'planejamento estrategico': 'Planejamento Estratégico',
+    'planejamentos estrategicos': 'Planejamento Estratégico',
     'pld ftp': 'PLD/FTP',
     'processo eletronico': 'Processo Eletrônico',
+    'processos eletronicos': 'Processo Eletrônico',
     'protocolo digital': 'Protocolo Digital',
+    'protocolos digitais': 'Protocolo Digital',
     'publicacao': 'Publicação',
+    'publicacoes': 'Publicação',
     'ritos cvm': 'Ritos CVM',
     'sandbox regulatorio': 'Sandbox Regulatório',
+    'sandboxs regulatorios': 'Sandbox Regulatório',
+    'securitizadora': 'Securitizadoras',
     'securitizadoras': 'Securitizadoras',
     'sistema governanca gestao cvm': 'Sistema de governança e gestão da CVM',
+    'sistemas governanca gestao cvm': 'Sistema de governança e gestão da CVM',
     'suitability': 'Suitability',
     'suspensao': 'Suspensão',
+    'suspensoes': 'Suspensão',
     'tecnologia informacao': 'Tecnologia da Informação',
+    'tecnologias informacao': 'Tecnologia da Informação',
     'termo compromisso': 'Termo de Compromisso',
-    'termo compromisso insider': 'Termo_Compromisso_Insider'
+    'termos compromisso': 'Termo de Compromisso',
+    'termo compromisso insider': 'Termo_Compromisso_Insider',
+    'termos compromisso insider': 'Termo_Compromisso_Insider'
 }
 
 tipo_mapping = {
+    'instrucao': 'Instruções',
     'instrucoes': 'Instruções',
+    'parecer orientacao': 'Pareceres de Orientação',
     'pareceres orientacao': 'Pareceres de Orientação',
+    'deliberacao': 'Deliberações',
     'deliberacoes': 'Deliberações',
+    'decisao conjunta': 'Decisões Conjuntas',
     'decisoes conjuntas': 'Decisões Conjuntas',
+    'oficio circular': 'Ofícios Circulares',
     'oficios circulares': 'Ofícios Circulares',
+    'lei decreto': 'Leis e Decretos',
     'leis decretos': 'Leis e Decretos',
+    'nota explicativa': 'Notas Explicativas',
     'notas explicativas': 'Notas Explicativas'
 }
+
 
 
 def load_model_and_vectorizer():
@@ -331,19 +391,35 @@ def process_message(ch, method, properties, body):
     # Prever intenção e extrair parâmetros, se aplicável
     parameters = predict_and_extract(utterance, model, vectorizer)
 
-    parametros = {
-        'tipo_documento': parameters.get('document_type'),
-        'tags': parameters.get('tags'),
-        'orgao': parameters.get('entity'),
-        'datas': parameters.get('dates')
-    }
+    if parameters is None:
+        # Intenção fora do escopo, retornar erro
+        response_message = {
+            'correlationId': correlation_id,
+            'input': utterance,
+            'data': {
+                'tipo_documento': None,
+                'tags': [],
+                'orgao': None,
+                'datas': []
+            },  # Nenhum dado será retornado
+            'error': "Intenção fora do escopo do projeto. Nenhuma busca será realizada."
+        }
+    else:
+        # Extrair os parâmetros normalmente se a intenção for válida (consulta_normativa)
+        parametros = {
+            'tipo_documento': parameters.get('document_type'),
+            'tags': parameters.get('tags'),
+            'orgao': parameters.get('entity'),
+            'datas': parameters.get('dates')
+        }
 
-    # Preparar a resposta para publicação na fila de resposta
-    response_message = {
-        'correlationId': correlation_id,
-        'input': utterance,
-        'parametros': parametros
-    }
+        # Preparar a resposta com os parâmetros extraídos
+        response_message = {
+            'correlationId': correlation_id,
+            'input': utterance,
+            'data': parametros, # Parâmetros extraídos
+            'error': None  # Nenhum erro, pois a intenção é válida
+        }
 
     logger.info(f"Resposta: {response_message}")
 

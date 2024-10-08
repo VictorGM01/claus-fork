@@ -21,6 +21,7 @@ export default function DateFilterButton({
         darkTheme={darkTheme}
         onClick={onToggle}
         active={isFilterActive} // Passando a propriedade para alterar a cor do botão
+        id={"dateFilterButton"}
       />
       <div
         className={`${styles.datePickerContainer} ${isOpen ? styles.show : ""}`}

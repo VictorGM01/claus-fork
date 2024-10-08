@@ -61,17 +61,25 @@ async function searchController(req, res) {
     };
     await publishToQueue('core.documents.search', data);
 
-    const parameters = await consumeQueue(
+    const intent = await consumeQueue(
       'core.documents.search.response',
       data.correlationId
     );
 
-    const documentos = await search(parameters);
+    if (intent) {
+      if (intent.error) {
+        return res.status(422).json({
+          message: intent.error,
+        });
+      }
 
-    return res.status(200).json({
-      message: 'Documents found successfully',
-      data: documentos,
-    });
+      const documentos = await search(intent.data);
+
+      return res.status(200).json({
+        message: 'Documents found successfully',
+        data: documentos,
+      });
+    }
   } catch (err) {
     if (err.message.includes('Timeout')) {
       return res.status(504).json({

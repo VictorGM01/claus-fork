@@ -3,7 +3,7 @@ import PrimaryButton from '../primaryButton';
 import styles from './styles.module.css';
 import PropTypes from 'prop-types';
 
-export default function SearchFilter({ darkTheme, buttonText, placeholder, options, isOpen, onToggle, onApply }) {
+export default function SearchFilter({ darkTheme, buttonText, placeholder, options, isOpen, onToggle, onApply, idButton, idInputModal, idApplyButton }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [tempSelectedOptions, setTempSelectedOptions] = useState([]); 
 
@@ -35,12 +35,14 @@ export default function SearchFilter({ darkTheme, buttonText, placeholder, optio
         buttonText={buttonText}
         darkTheme={darkTheme}
         onClick={onToggle} 
+        id={idButton ? idButton : ''}
       />
       <div className={`${styles.modal} ${isOpen ? styles.show : ""} ${darkTheme ? styles.modalDark : ""}`}>
         {isOpen && (
           <div className={styles.modalContent}>
             <button className={styles.closeButton} onClick={handleClose}>X</button>
             <input
+              id={idInputModal ? idInputModal : ""}
               className={styles.searchInput}
               type="text"
               placeholder={placeholder}
@@ -62,7 +64,7 @@ export default function SearchFilter({ darkTheme, buttonText, placeholder, optio
             </ul>
             {/* Botão Aplicar */}
             <div className={styles.modalActions}>
-              <button className={styles.applyButton} onClick={handleApply}>Aplicar</button>
+              <button id={idApplyButton ? idApplyButton : ''} className={styles.applyButton} onClick={handleApply}>Aplicar</button>
             </div>
           </div>
         )}

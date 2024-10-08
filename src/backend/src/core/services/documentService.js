@@ -86,74 +86,64 @@ async function create(documento) {
 async function search(parameters) {
   const { tipo_documento, orgao, tags, datas } = parameters;
 
-  const query = {
-    where: {},
-    include: [
-      {
-        model: database.Tags,
-        as: 'tags',
-        through: { attributes: [] },
-      },
-      {
-        model: database.Tipos_Documentos,
-        as: 'tipo',
-      },
-      {
-        model: database.Orgaos,
-        as: 'orgao',
-      },
-    ],
-  };
+  let sql = `
+    SELECT 
+      d.id, 
+      d.nome, 
+      d.link, 
+      d.data_publicacao, 
+      d.id_tipo, 
+      d.id_orgao, 
+      t.nome AS tipo_nome, 
+      o.nome AS orgao_nome, 
+      ARRAY_AGG(json_build_object('id', tg.id, 'nome', tg.nome)) AS tags
+    FROM "Documentos" d
+    LEFT JOIN "Tipos_Documentos" t ON d.id_tipo = t.id
+    LEFT JOIN "Orgaos" o ON d.id_orgao = o.id
+    LEFT JOIN "Tags_Documentos" td ON d.id = td.id_documento
+    LEFT JOIN "Tags" tg ON td.id_tag = tg.id
+  `;
+
+  let whereClauses = [];
 
   if (tipo_documento) {
-    const tipoDocumentoBd = await database.Tipos_Documentos.findOne({
-      where: { nome: tipo_documento },
-    });
-    if (tipoDocumentoBd) {
-      query.where.id_tipo = tipoDocumentoBd.id;
-    }
+    whereClauses.push(`t.nome = '${tipo_documento}'`);
   }
 
   if (orgao) {
-    const orgaoBd = await database.Orgaos.findOne({
-      where: { nome: orgao },
-    });
-    if (orgaoBd) {
-      query.where.id_orgao = orgaoBd.id;
-    }
+    whereClauses.push(`o.nome = '${orgao}'`);
   }
 
   if (tags && tags.length) {
-    query.include.push({
-      model: database.Tags,
-      as: 'tags',
-      where: {
-        nome: tags,
-      },
-      through: { attributes: [] },
-    });
+    const tagNames = tags.map(tag => `'${tag}'`).join(', ');
+    whereClauses.push(`d.id IN (
+      SELECT td.id_documento
+      FROM "Tags_Documentos" td
+      LEFT JOIN "Tags" tg ON td.id_tag = tg.id
+      WHERE tg.nome IN (${tagNames})
+    )`);
   }
 
   if (datas && datas.length) {
-    const datasFiltradas = [];
+    const datasFiltradas = datas.map(([dataInicial, dataFinal]) => {
+      const dataInicialFormatada = new Date(dataInicial).toISOString();
+      const dataFinalFormatada = new Date(dataFinal).toISOString();
+      return `(d.data_publicacao BETWEEN '${dataInicialFormatada}' AND '${dataFinalFormatada}')`;
+    }).join(' OR ');
 
-    datas.forEach(([dataInicial, dataFinal]) => {
-      const dataInicialFormatada = new Date(dataInicial);
-      const dataFinalFormatada = new Date(dataFinal);
-
-      datasFiltradas.push({
-        data_publicacao: {
-          [Op.between]: [dataInicialFormatada, dataFinalFormatada],
-        },
-      });
-    });
-
-    if (datasFiltradas.length) {
-      query.where[Op.or] = datasFiltradas;
-    }
+    whereClauses.push(`(${datasFiltradas})`);
   }
 
-  const documentos = await database.Documentos.findAll(query);
+  if (whereClauses.length) {
+    sql += ' WHERE ' + whereClauses.join(' OR ');
+  }
+
+  sql += ' GROUP BY d.id, d.nome, d.link, d.data_publicacao, d.id_tipo, d.id_orgao, t.nome, o.nome';
+
+  const documentos = await database.sequelize.query(sql, {
+    type: database.Sequelize.QueryTypes.SELECT,
+  });
+
   return documentos;
 }
 

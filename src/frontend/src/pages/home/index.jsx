@@ -24,6 +24,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [logSent, setLogSent] = useState(false);
+  const [pagesAccessed, setPagesAccessed] = useState(["Pg. 1"]);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const resultsPerPage = 5;
@@ -33,6 +34,8 @@ export default function Home() {
     indexOfFirstResult,
     indexOfLastResult
   );
+  const [modalEditAllTags, setModalEditAllTags] = useState([])
+  const [modalEditTagsLoading, setModalEditTagsLoading] = useState(true)
 
   const totalPages = Math.ceil(filteredData.length / resultsPerPage);
 
@@ -67,16 +70,14 @@ export default function Home() {
 
       if (Array.isArray(result.data)) {
         const formattedData = result.data.map((doc) => {
-          const [year, month, day] = doc.data_publicacao
-            .split("T")[0]
-            .split("-");
+          const [year, month, day] = doc.data_publicacao.split("T")[0].split("-");
           return {
             id: doc.id,
             Nome: { nome: doc.nome, link: doc.link },
-            "Data de Publicação": `${day}/${month}/${year}`,
+            "Data de Publicação": `${day}/${month}/${year}`, 
             Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
-            "Órgão Regulador": doc.orgao?.nome || doc.orgao_nome || "N/A",
-            "Tipo de Documento": doc.tipo?.nome || doc.tipo_nome || "N/A",
+            "Órgão Regulador": doc.orgao?.nome || "N/A",
+            "Tipo de Documento": doc.tipo?.nome || "N/A",
           };
         });
 
@@ -100,6 +101,23 @@ export default function Home() {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/tags`);
+      const result = await response.json();
+
+      if (Array.isArray(result.data)) {
+        setModalEditAllTags(result.data);
+      } else {
+        console.error('Erro ao buscar tags');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar tags:', error);
+    } finally {
+      setModalEditTagsLoading(false);
+    }
+  };
+
   const handleSearch = async (searchText) => {
     try {
       setLoading(true);
@@ -117,21 +135,21 @@ export default function Home() {
       const result = await response.json();
 
       if (Array.isArray(result.data)) {
-        const formattedData = result.data.map((doc) => ({
-          id: doc.id,
-          Nome: { nome: doc.nome, link: doc.link },
-          "Data de Publicação": new Date(
-            doc.data_publicacao
-          ).toLocaleDateString("pt-BR"),
-          Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
-          "Órgão Regulador": doc.orgao_nome || "N/A",
-          "Tipo de Documento": doc.tipo_nome || "N/A",
-        }));
-
+        const formattedData = result.data.map((doc) => {
+          const [year, month, day] = doc.data_publicacao.split("T")[0].split("-");
+          return {
+            id: doc.id,
+            Nome: { nome: doc.nome, link: doc.link },
+            "Data de Publicação": `${day}/${month}/${year}`,
+            Tags: Array.isArray(doc.tags) ? abbreviateTags(doc.tags) : [],
+            "Órgão Regulador": doc.orgao_nome || "N/A",
+            "Tipo de Documento": doc.tipo_nome || "N/A",
+          };
+        });
         setTableData(formattedData);
         setFilteredData(formattedData);
 
-        await sendLog(`Busca realizada: ${searchText}`, "Busca realizada");
+        await sendLog(`Busca realizada: ${searchText}`, "Filtro realizado");
       } else {
         console.error("Erro: a resposta não é um array de documentos.", result);
       }
@@ -145,28 +163,19 @@ export default function Home() {
   const handleDateFilterChange = async (date) => {
     setSelectedDate(date);
     filterData(date, selectedTags, selectedRegulators);
-    await sendLog(
-      `Filtro de data aplicado: ${date.toLocaleDateString("pt-BR")}`,
-      "Filtro realizado"
-    );
+    await sendLog(`Filtro de data aplicado: ${date.toLocaleDateString("pt-BR")}`, "Filtro realizado");
   };
 
   const handleTagFilterChange = async (selectedTags) => {
     setSelectedTags(selectedTags);
     filterData(selectedDate, selectedTags, selectedRegulators);
-    await sendLog(
-      `Filtro de tags aplicado: ${selectedTags.join(", ")}`,
-      "Filtro realizado"
-    );
+    await sendLog(`Filtro de tags aplicado: ${selectedTags.join(", ")}`, "Filtro realizado");
   };
 
   const handleRegulatorFilterChange = async (selectedRegulators) => {
     setSelectedRegulators(selectedRegulators);
     filterData(selectedDate, selectedTags, selectedRegulators);
-    await sendLog(
-      `Filtro de órgão regulador aplicado: ${selectedRegulators.join(", ")}`,
-      "Filtro realizado"
-    );
+    await sendLog(`Filtro de órgão regulador aplicado: ${selectedRegulators.join(", ")}`, "Filtro realizado");
   };
 
   const filterData = (date, tags, regulators) => {
@@ -201,21 +210,27 @@ export default function Home() {
 
   const sendLog = async (descricao, tipo) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_URL_API_BACKEND}/logs`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ descricao, tipo }),
-        }
-      );
+      const logData = {
+        descricao: descricao || "Descrição não fornecida",
+        tipo: tipo || "Tipo não fornecido"
+      };
+      
+      console.log("Enviando log com os dados:", logData);
+      
+      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/logs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(logData),
+      });
 
       if (response.ok) {
-        console.log("Log enviado com sucesso:", descricao);
+        console.log("Log enviado com sucesso:", logData);
       } else {
-        console.error("Erro ao enviar log");
+        console.error("Erro ao enviar log. Status:", response.status);
+        const errorData = await response.json();
+        console.error("Detalhes do erro:", errorData);
       }
     } catch (error) {
       console.error("Erro ao enviar log:", error);
@@ -223,10 +238,11 @@ export default function Home() {
   };
 
   useEffect(() => {
+    fetchTags();
     fetchAllDocuments();
 
     if (!logSent) {
-      sendLog("Página Home acessada", "Acesso à página principal");
+      sendLog('Página principal acessada', 'Acesso à página principal');
       setLogSent(true);
     }
   }, [logSent]);
@@ -267,7 +283,6 @@ export default function Home() {
   }, [micOn]);
 
   const sendAudioToSTT = async (audioBlob) => {
-    console.log("Sending audio to Whisper...");
     const formData = new FormData();
     const audioFile = new File([audioBlob], "audio.wav", { type: "audio/wav" });
     formData.append("audio", audioFile);
@@ -320,7 +335,8 @@ export default function Home() {
     if (currentPage < totalPages) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
-      await sendLog(`Página ${nextPage} acessada`, "Página acessada");
+      await sendLog(`Página principal acessada. ${pagesAccessed.join(" | ")} | Pg. ${nextPage}`, 'Acesso à página principal');
+      setPagesAccessed((prev) => [...prev, `Pg. ${nextPage}`]);
     }
   };
 
@@ -328,13 +344,15 @@ export default function Home() {
     if (currentPage > 1) {
       const prevPage = currentPage - 1;
       setCurrentPage(prevPage);
-      await sendLog(`Página ${prevPage} acessada`, "Página acessada");
+      await sendLog(`Página principal acessada. ${pagesAccessed.join(" | ")} | Pg. ${prevPage}`, 'Acesso à página principal');
+      setPagesAccessed((prev) => [...prev, `Pg. ${prevPage}`]);
     }
   };
 
   const handlePageChange = async (pageNumber) => {
     setCurrentPage(pageNumber);
-    await sendLog(`Página ${pageNumber} acessada`, "Página acessada");
+    await sendLog(`Página principal acessada. ${pagesAccessed.join(" | ")} | Pg. ${pageNumber}`, 'Acesso à página principal');
+    setPagesAccessed((prev) => [...prev, `Pg. ${pageNumber}`]);
   };
 
   const openEditTagsModal = (document) => {
@@ -346,7 +364,7 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleSaveTags = async (updatedTags) => {
+  const saveUpdatedTags = async (updatedTags) => {
     if (!selectedDocument) return;
 
     try {
@@ -426,13 +444,7 @@ export default function Home() {
           ) : (
             <>
               <Table
-                columns={[
-                  "Nome",
-                  "Órgão Regulador",
-                  "Tipo de Documento",
-                  "Tags",
-                  "Data de Publicação",
-                ]}
+                columns={["Nome", "Órgão Regulador", "Tipo de Documento", "Tags", "Data de Publicação"]}
                 data={currentResults}
                 isLog={false}
                 isTag={true}
@@ -460,8 +472,10 @@ export default function Home() {
           documentName={selectedDocument.documentName}
           currentTags={selectedDocument.currentTags}
           availableTags={availableTags}
-          onSave={handleSaveTags}
+          onSave={saveUpdatedTags}
           darkTheme={darkTheme}
+          allTags={modalEditAllTags}
+          loading={modalEditTagsLoading}
         />
       )}
     </main>

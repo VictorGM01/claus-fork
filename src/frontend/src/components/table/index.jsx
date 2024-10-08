@@ -188,5 +188,5 @@ Table.propTypes = {
   isLog: PropTypes.bool,
   isTag: PropTypes.bool,
   darkTheme: PropTypes.bool,
-  onEditTags: PropTypes.func.isRequired, 
+  onEditTags: PropTypes.func, 
 };

@@ -33,6 +33,7 @@ export default function Pagination({ totalPages, currentPage, onPageChange, dark
         className={`${styles.arrowButton} ${darkTheme ? styles["button-dark"] : styles["button-light"]}`}
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
+        id='prevPageButton'
       >
         &lt;
       </button>
@@ -40,6 +41,8 @@ export default function Pagination({ totalPages, currentPage, onPageChange, dark
       {/* Números de páginas */}
       {pageNumbers.map((number, index) => (
         <button
+          data-testid={typeof number === 'number' ? `pageButton-${number}` : undefined}
+          data-active={currentPage === number ? 'true' : 'false'}
           key={index}
           onClick={() => typeof number === 'number' && onPageChange(number)}
           className={`${styles.pageButton} ${darkTheme ? styles["pageButton-dark"] : styles["pageButton-light"]} ${currentPage === number ? styles.active : ''}`}
@@ -51,6 +54,7 @@ export default function Pagination({ totalPages, currentPage, onPageChange, dark
 
       {/* Seta para avançar */}
       <button
+        id='nextPageButton'
         className={`${styles.arrowButton} ${darkTheme ? styles["button-dark"] : styles["button-light"]}`}
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

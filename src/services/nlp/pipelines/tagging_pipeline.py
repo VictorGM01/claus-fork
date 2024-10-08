@@ -163,7 +163,7 @@ def process_message(ch, method, properties, body):
 
 def append_to_training_data(df_new):
     training_data_path = 'data/processed/training_data.csv'
-
+    
     if not os.path.exists('data'):
         os.makedirs('data')
     if not os.path.exists('data/processed'):
@@ -181,8 +181,7 @@ def append_to_training_data(df_new):
         df_combined = pd.concat([df_existing, df_new], ignore_index=True)
 
         # mantém apenas o último registro, se tiver mais de uma linha para o mesmo filename
-        df_combined.drop_duplicates(
-            subset='filename', keep='last', inplace=True)
+        df_combined.drop_duplicates(subset='filename', keep='last', inplace=True)
 
         # quantidade de linhas depois
         logger.info(f"Linhas depois: {len(df_combined)}")

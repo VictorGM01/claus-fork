@@ -45,6 +45,7 @@ export default function Header({ darkTheme, handleCheckboxChange }) {
             aria-checked="false"
             role="switch"
             className={stylesToggle.switch}
+            id='themeToggle'
           >
             <input
               type="checkbox"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './styles.module.css';
-import LoaderSpinner from '../loaderSpinner'; 
+import LoaderSpinner from '../loaderSpinner';
 
 export default function ModalEditTags({
   isOpen,
@@ -9,17 +9,15 @@ export default function ModalEditTags({
   onSave,
   darkTheme,
   documentName,
+  allTags,
+  loading,
   currentTags = [],
 }) {
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [allTags, setAllTags] = useState([]);
-  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
     if (isOpen) {
-      setLoading(true); 
-      fetchTags();
       setSearchTerm('');
     }
   }, [isOpen]);
@@ -27,23 +25,6 @@ export default function ModalEditTags({
   useEffect(() => {
     setSelectedTags(currentTags.map((tag) => tag.id));
   }, [currentTags]);
-
-  const fetchTags = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/tags`);
-      const result = await response.json();
-
-      if (Array.isArray(result.data)) {
-        setAllTags(result.data);
-      } else {
-        console.error('Erro ao buscar tags');
-      }
-    } catch (error) {
-      console.error('Erro ao buscar tags:', error);
-    } finally {
-      setLoading(false); 
-    }
-  };
 
   const handleTagToggle = (tagId) => {
     setSelectedTags((prevSelectedTags) => {
@@ -69,14 +50,13 @@ export default function ModalEditTags({
   return (
     <div className={styles.modalOverlay} id='modalOverlay'>
       <div
-        className={`${styles.modal} ${
-          darkTheme ? styles['dark-modal'] : styles['light-modal']
-        }`} id="modal"
+        className={`${styles.modal} ${darkTheme ? styles['dark-modal'] : styles['light-modal']}`}
+        id="modal"
+        data-testid="modal"
       >
         <button
-          className={`${styles.closeButton} ${
-            darkTheme ? styles['dark-closeButton'] : styles['light-closeButton']
-          }`}
+          className={`${styles.closeButton} ${darkTheme ? styles['dark-closeButton'] : styles['light-closeButton']
+            }`}
           onClick={onClose}
           id='buttonClose'
         >
@@ -88,16 +68,15 @@ export default function ModalEditTags({
 
         {loading ? (
           <div className={styles.loaderContainer}>
-            <LoaderSpinner loading={loading} darkTheme={darkTheme} /> 
+            <LoaderSpinner loading={loading} darkTheme={darkTheme} />
           </div>
         ) : (
           <>
             <input
               type="text"
               placeholder="Digite o nome da tag"
-              className={`${styles.input} ${
-                darkTheme ? styles['dark-input'] : styles['light-input']
-              }`}
+              className={`${styles.input} ${darkTheme ? styles['dark-input'] : styles['light-input']
+                }`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -106,32 +85,31 @@ export default function ModalEditTags({
                 <div key={tag.id} className={styles.tagItem}>
                   <input
                     type="checkbox"
+                    id={`tag-${tag.id}`}
                     checked={selectedTags.includes(tag.id)}
                     onChange={() => handleTagToggle(tag.id)}
                   />
-                  <label>{tag.nome}</label>
+                  <label htmlFor={`tag-${tag.id}`}>{tag.nome}</label>
                 </div>
               ))}
             </div>
             <div className={styles.buttonsContainer}>
               <button
                 onClick={handleSave}
-                className={`${styles.submitButton} ${
-                  darkTheme
-                    ? styles['dark-submitButton']
-                    : styles['light-submitButton']
-                }`}
+                className={`${styles.submitButton} ${darkTheme
+                  ? styles['dark-submitButton']
+                  : styles['light-submitButton']
+                  }`}
                 id='submitButton'
               >
                 Salvar
               </button>
               <button
                 onClick={onClose}
-                className={`${styles.cancelButton} ${
-                  darkTheme
-                    ? styles['dark-cancelButton']
-                    : styles['light-cancelButton']
-                }`}
+                className={`${styles.cancelButton} ${darkTheme
+                  ? styles['dark-cancelButton']
+                  : styles['light-cancelButton']
+                  }`}
               >
                 Cancelar
               </button>

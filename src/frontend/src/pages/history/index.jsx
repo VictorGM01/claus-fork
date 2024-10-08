@@ -151,7 +151,10 @@ export default function History() {
   };
 
   return (
-    <main className={`${styles.main} ${darkTheme ? styles["dark-main"] : ""}`}>
+    <main
+      data-theme={darkTheme ? 'dark' : 'light'}
+      className={`${styles.main} ${darkTheme ? styles["dark-main"] : ""}` }
+    >
       <div className={styles.container}>
         <Header
           darkTheme={darkTheme}
@@ -182,6 +185,9 @@ export default function History() {
               isOpen={openFilter === "acao"}
               onToggle={() => toggleFilter("acao")}
               onApply={handleActionFilterChange}
+              idButton={"actionFilterButton"}
+              idInputModal={"searchFilterInput"}
+              idApplyButton={"applyFilterButton"}
             />
             <SearchFilter
               buttonText="Filtrar por Endereço IP"
@@ -191,6 +197,9 @@ export default function History() {
               isOpen={openFilter === "ip"}
               onToggle={() => toggleFilter("ip")}
               onApply={handleIPFilterChange}
+              idButton={"ipFilterButton"}
+              idInputModal={"searchFilterInput"}
+              idApplyButton={"applyFilterButton"}
             />
           </div>
 

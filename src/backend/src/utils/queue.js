@@ -31,7 +31,7 @@ async function consumeQueue(queueName, correlationId) {
         const content = JSON.parse(msg.content.toString());
         if (content.correlationId === correlationId) {
           clearTimeout(timeout);
-          resolve(content.parametros);
+          resolve(content);
           channel.ack(msg);
 
           channel.close();
