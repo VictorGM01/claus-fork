@@ -183,7 +183,9 @@ export default function Home() {
 
     if (date) {
       filtered = filtered.filter((doc) => {
-        const docDate = new Date(doc["Data de Publicação"]);
+        // o formato está dd/mm/yyyy
+        const [day, month, year] = doc["Data de Publicação"].split("/");
+        const docDate = new Date(year, month -1, day);
         return (
           docDate.getDate() === date.getDate() &&
           docDate.getMonth() === date.getMonth() &&

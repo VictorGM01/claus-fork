@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles.module.css'; 
 import stylesToggle from "../../style/toggleTheme.module.css";
 import PropTypes from 'prop-types';
-import { useLocation } from 'react-router-dom'; 
+import { useLocation, Link } from 'react-router-dom'; 
 
 export default function Header({ darkTheme, handleCheckboxChange }) {
   const location = useLocation(); 
@@ -10,33 +10,33 @@ export default function Header({ darkTheme, handleCheckboxChange }) {
   return (
     <header className={styles.items}>
       {darkTheme ? (
-        <a href='/'>
+        <Link to='/'>
           <img src={"/logo-dark-theme.svg"} alt={"Tema escuro do grupo Claus"} />
-        </a>
+        </Link>
       ) : (
-        <a href='/'>
+        <Link to='/'>
           <img src={"/logo-light-theme.svg"} alt={"Tema claro do grupo Claus"} />
-        </a>
+        </Link>
       )}
       <div className={styles.options}>  
         <nav className={styles.nav}>
           <ul className={styles.list}>
             {location.pathname !== '/' && (
               <li className={styles.item}>
-                <a 
+                <Link 
                   className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/' ? styles.active : ''}`}
-                  href="/">Início</a>
+                  to="/">Início</Link>
               </li>
             )}
             <li className={styles.item}>
-              <a 
+              <Link
                 className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/historico' ? styles.active : ''}`}
-                href="/historico">Histórico</a>
+                to="/historico">Histórico</Link>
             </li>
             <li className={styles.item}>
-              <a 
+              <Link
                 className={`${darkTheme ? styles["link-dark"] : styles["link-light"]} ${location.pathname === '/emails' ? styles.active : ''}`} 
-                href="/emails">E-mails</a> 
+                to="/emails">E-mails</Link> 
             </li>
           </ul>
         </nav>

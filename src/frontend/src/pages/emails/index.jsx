@@ -53,11 +53,13 @@ export default function Emails() {
       const formattedData = result.data.map(email => ({
         'E-mail': email.email,
         'Endereço do IP': email.ip,
-        'Data de Recebimento': new Date(email.criado_em) 
+        'Data de Recebimento': email.criado_em
       }));
   
       
-      const sortedData = formattedData.sort((a, b) => b['Data de Recebimento'] - a['Data de Recebimento']);
+      const sortedData = formattedData.sort((a, b) => (
+        new Date(b['Data de Recebimento']).getTime() - new Date(a['Data de Recebimento']).getTime()
+      ));
   
       setEmailData(sortedData);
       setFilteredData(sortedData); 
@@ -163,6 +165,7 @@ export default function Emails() {
                 darkTheme={darkTheme}
                 isLog={false}
                 isTag={false}
+                isEmail={true}
                 columns={['E-mail', 'Endereço do IP', 'Data de Recebimento']}
                 data={currentResults}
               />

@@ -6,7 +6,7 @@ import DataFilterButton from "../../components/dateFilterButton";
 import SearchFilter from "../../components/searchFilter";
 import Pagination from "../../components/pagination";
 import ResultsCount from "../../components/resultsCount";
-import LoaderSpinner from "../../components/loaderSpinner"; 
+import LoaderSpinner from "../../components/loaderSpinner";
 
 export default function History() {
   const [darkTheme, setDarkTheme] = useState(false);
@@ -48,26 +48,28 @@ export default function History() {
 
   const fetchLogs = async () => {
     try {
-      setLoading(true); 
-      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/logs`);
+      setLoading(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_URL_API_BACKEND}/logs`
+      );
       const result = await response.json();
 
-      const formattedData = result.rows.map(log => ({
+      const formattedData = result.rows.map((log) => ({
         "Endereço IP": log.ip,
         "Tipo de Ação": log.tipo.nome,
         "Descrição da Ação": log.descricao,
-        "Data": new Date(log.criado_em)
+        Data: log.criado_em,
       }));
 
       setLogData(formattedData);
       setFilteredData(formattedData);
 
-      const ips = formattedData.map(log => log["Endereço IP"]);
+      const ips = formattedData.map((log) => log["Endereço IP"]);
       setIpOptions([...new Set(ips)]);
 
-      console.log('Logs:', formattedData);
+      console.log("Logs:", formattedData);
     } catch (error) {
-      console.log('Erro ao buscar logs:', error);
+      console.log("Erro ao buscar logs:", error);
     } finally {
       setLoading(false);
     }
@@ -75,13 +77,16 @@ export default function History() {
 
   const sendLog = async (descricao, tipo) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_URL_API_BACKEND}/logs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ descricao, tipo }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_URL_API_BACKEND}/logs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ descricao, tipo }),
+        }
+      );
 
       if (response.ok) {
         console.log("Log enviado com sucesso:", descricao);
@@ -108,7 +113,9 @@ export default function History() {
     }
 
     if (actions.length > 0) {
-      filtered = filtered.filter((log) => actions.includes(log["Tipo de Ação"]));
+      filtered = filtered.filter((log) =>
+        actions.includes(log["Tipo de Ação"])
+      );
     }
 
     if (ips.length > 0) {
@@ -123,14 +130,17 @@ export default function History() {
     fetchLogs();
 
     if (!logSent) {
-      sendLog('Página de histórico acessada', 'Acesso à página de logs');
+      sendLog("Página de histórico acessada", "Acesso à página de logs");
       setLogSent(true);
     }
   }, [logSent]);
 
   const indexOfLastResult = currentPage * resultsPerPage;
   const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = filteredData.slice(indexOfFirstResult, indexOfLastResult);
+  const currentResults = filteredData.slice(
+    indexOfFirstResult,
+    indexOfLastResult
+  );
 
   const totalPages = Math.ceil(filteredData.length / resultsPerPage);
 
@@ -152,8 +162,8 @@ export default function History() {
 
   return (
     <main
-      data-theme={darkTheme ? 'dark' : 'light'}
-      className={`${styles.main} ${darkTheme ? styles["dark-main"] : ""}` }
+      data-theme={darkTheme ? "dark" : "light"}
+      className={`${styles.main} ${darkTheme ? styles["dark-main"] : ""}`}
     >
       <div className={styles.container}>
         <Header
@@ -179,7 +189,7 @@ export default function History() {
                 "Documento visualizado",
                 "Acesso à página de logs",
                 "Acesso à página de e-mails",
-                "Cadastro de e-mail"
+                "Cadastro de e-mail",
               ]}
               darkTheme={darkTheme}
               isOpen={openFilter === "acao"}
@@ -203,23 +213,25 @@ export default function History() {
             />
           </div>
 
-          <ResultsCount
-            darkTheme={darkTheme}
-            count={filteredData.length}
-          />
+          <ResultsCount darkTheme={darkTheme} count={filteredData.length} />
 
           {loading ? (
-            <LoaderSpinner loading={loading} darkTheme={darkTheme} /> 
+            <LoaderSpinner loading={loading} darkTheme={darkTheme} />
           ) : (
             <>
               <Table
                 darkTheme={darkTheme}
                 isLog={true}
                 isTag={false}
-                columns={["Endereço IP", "Tipo de Ação", "Descrição da Ação", "Data"]}
-                data={currentResults.map(log => ({
+                columns={[
+                  "Endereço IP",
+                  "Tipo de Ação",
+                  "Descrição da Ação",
+                  "Data",
+                ]}
+                data={currentResults.map((log) => ({
                   ...log,
-                  "Data": log["Data"].toLocaleDateString("pt-BR")
+                  Data: log["Data"],
                 }))}
               />
 

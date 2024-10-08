@@ -10,6 +10,7 @@ export default function Table({
   isTag = false,
   darkTheme = false,
   onEditTags,
+  isEmail = false,
 }) {
   const [sort, setSort] = useState({ column: "", order: "" });
   const [sortedData, setSortedData] = useState([...data]);
@@ -34,19 +35,17 @@ export default function Table({
   }, [data]);
 
   const formatDate = (date) => {
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return date; 
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, "0");
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-    const seconds = String(d.getSeconds()).padStart(2, "0");
-
-    if (isLog && date.includes("T")) {
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    if ((isLog || isEmail) && date.includes("T")) {
+      const [datePart, timePart] = date.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hours, minutes, seconds] = timePart
+        .split(".")[0]
+        .split(":")
+        .map(Number);
+      const adjustedHours = hours - 3;
+      return `${day}/${month}/${year} ${adjustedHours}:${minutes}:${seconds}`;
     }
-    return `${day}/${month}/${year}`;
+    return date;
   };
 
   const generateRandomColor = () => {
@@ -132,7 +131,7 @@ export default function Table({
           <tr key={index}>
             {columns.map((column) => (
               <td key={column}>
-                {!isNaN(new Date(row[column]).getTime()) &&
+                {!isNaN(new Date(row[column])) &&
                 !isIpAddress(row[column]) ? (
                   formatDate(row[column])
                 ) : column.toLowerCase() === "tags" && isTag ? (
@@ -188,5 +187,6 @@ Table.propTypes = {
   isLog: PropTypes.bool,
   isTag: PropTypes.bool,
   darkTheme: PropTypes.bool,
-  onEditTags: PropTypes.func, 
+  onEditTags: PropTypes.func,
+  isEmail: PropTypes.bool,
 };
